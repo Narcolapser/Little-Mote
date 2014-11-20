@@ -1,0 +1,1 @@
+So here is the plan. I played around with WMinput and was pleased with a number of things it could do, but highly disappointed in a number of it's short fallings. The objective here is relatively simple: make a WiiMote wrapper class that calls call back functions when the related buttons are pressed. 

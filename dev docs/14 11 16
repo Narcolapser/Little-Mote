@@ -1,0 +1,3 @@
+So here is the plan. I played around with WMinput and was pleased with a number of things it could do, but highly disappointed in a number of it's short fallings. The objective here is relatively simple: make a WiiMote wrapper class that calls call back functions when the related buttons are pressed. Why not just use cwiid? well. this actually does use cwiid. I just get the feeling that there are other people out there, like myself, whom don't want to muck around writing a remote for their computer from scratch. So I am making a simple warper that you can plug and play with essentially. I'll probably include lots of functions that can be configured as you please, or as I please.
+
+
