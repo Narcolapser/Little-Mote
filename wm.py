@@ -49,6 +49,9 @@ class WiiMote (object):
 			uinput.REL_Y
 			])
 		
+		self.lstate = 0
+		self.rstate = 0
+		
 	def start(self):
 		'''
 		Start the reactor loop that listens for WiiMote events so the appropriate call back
@@ -59,13 +62,13 @@ class WiiMote (object):
 			time.sleep(0.01)
 			bstate = self.mote.state['buttons']
 			if bstate % 2 and self.calls['2'] is not None:
-				self.calls['2']()
+				self.calls['2'](wm)
 			if bstate / 2 % 2 and self.calls['1'] is not None:
-				self.calls['1']()
-			if bstate / 4 % 2 and self.calls['b'] is not None:
-				self.calls['b']()
-			if bstate / 8 % 2 and self.calls['a'] is not None:
-				self.calls['a']()
+				self.calls['1'](wm)
+#			if bstate / 4 % 2 and self.calls['b'] is not None:
+#				self.calls['b'](wm)
+#			if bstate / 8 % 2 and self.calls['a'] is not None:
+#				self.calls['a'](wm)
 			if bstate / 16 % 2 and self.calls['minus'] is not None:
 				self.calls['minus']()
 			if bstate / 128 % 2 and self.calls['home'] is not None:
@@ -80,7 +83,8 @@ class WiiMote (object):
 				self.calls['up']()
 			if bstate / 4096 % 2 and self.calls['plus'] is not None:
 				self.calls['plus']()
-			
+			leftClick(wm)
+			rightClick(wm)
 		
 	def stop(self):
 		'''
@@ -102,31 +106,39 @@ def callmeMaybe():
 	print "I was called!"
 
 def countUp():
-	wm.ledNum = (wm.ledNum + 1) % 16
-	wm.mote.led = wm.ledNum
+	wm.ledNum = (wm.ledNum + 0.1) % 16
+	if wm.ledNum < 1:
+		wm.ledNum = 1
+	wm.mote.led = int(wm.ledNum)
 
 def countDown():
-	wm.ledNum = (wm.ledNum - 1) % 16
-	wm.mote.led = wm.ledNum
+	wm.ledNum = (wm.ledNum - 0.1) % 16
+	if wm.ledNum < 1:
+		wm.ledNum = 16
+	wm.mote.led = int(wm.ledNum)
 
 def mousetickDown():
-	mousetick(0,1)
+	mousetick(0,int(wm.ledNum))
 def mousetickUp():
-	mousetick(0,-1)
+	mousetick(0,int(-1*wm.ledNum))
 def mousetickLeft():
-	mousetick(-1,0)
+	mousetick(int(-1*wm.ledNum),0)
 def mousetickRight():
-	mousetick(1,0)
+	mousetick(int(wm.ledNum),0)
 
 def mousetick(x,y):
 	wm.mouse.emit(uinput.REL_X,x)
 	wm.mouse.emit(uinput.REL_Y,y)
 
-def leftClick():
-	wm.mouse.emit_click(uinput.BTN_LEFT)
+def leftClick(wm):
+	state = wm.mote.state['buttons'] / 8 % 2
+	if state != wm.lstate:
+		wm.mouse.emit(uinput.BTN_LEFT,state)
+#		wm.mouse.emit(uinput.BTN_LEFT,1)
+	wm.lstate = state
 
-def rightClick():
-	wm.mouse.emit_click(uinput.BTN_LEFT)
+def rightClick(wm):
+	wm.mouse.emit(uinput.BTN_LEFT,0)
 
 if __name__ == "__main__":
 	wm = WiiMote()
